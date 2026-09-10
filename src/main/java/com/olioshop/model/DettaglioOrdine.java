@@ -1,4 +1,5 @@
 package com.olioshop.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -33,7 +34,10 @@ public class DettaglioOrdine {
     @JoinColumn(name = "prodotto_id", nullable = false)
     private Prodotto prodotto;
 
-
+    // Indica a Jackson di non serializzare questo campo in JSON:
+    // evita il loop infinito (ricorsione ciclica) tra Ordine e DettaglioOrdine quando si invia la risposta al frontend,
+    // senza influire sul salvataggio della relazione nel database.
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ordine_id", nullable = false)
     private Ordine ordine;

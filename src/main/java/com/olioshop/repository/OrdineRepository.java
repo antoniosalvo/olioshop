@@ -11,4 +11,7 @@ import java.util.List;
 @Repository
 public interface OrdineRepository extends JpaRepository<Ordine, Long> {
     List<Ordine> findByUtenteId(Long utenteId);
+
+    //lo ho gia built in dall interfaccia
+    List<Ordine> findTop5ByUtenteIdOrderByDataCreazioneDesc(Long utenteId);
 }

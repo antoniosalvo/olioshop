@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -28,12 +29,25 @@ public class OrdineController {
             // che sta viaggiano d tanto per fare pagamento devo avere per froza il token
             String email = Utils.getEmail();
             Ordine o = ordineService.creaOrdine(email, righeOrdine);
-            return new ResponseEntity<>(o, HttpStatus.CREATED);
+            // Invia una risposta JSON pulita senza relazioni cicliche
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(Collections.singletonMap("messaggio", "Ordine creato con successo, ID: " + o.getId()));
         }
         catch(IllegalArgumentException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         catch(RuntimeException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    //all url ordini/mieiordini trovo la risposta con la top 5
+    @GetMapping("/mieiOrdini")
+    public ResponseEntity<?> getMieiOrdini() {
+        try {
+            String email = Utils.getEmail();
+            return ResponseEntity.ok(ordineService.getUltimiOrdiniUtente(email));
+        } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }

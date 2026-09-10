@@ -38,7 +38,8 @@ public class ProdottoService {
         if (quantitaRichiesta <= 0) {
             throw new IllegalArgumentException("La quantità da acquistare deve essere maggiore di zero.");
         }
-        Prodotto prodotto = trovaPerId(prodottoId);
+        Prodotto prodotto = prodottoRepository.findByIdWithLock(prodottoId)
+                .orElseThrow(() -> new RuntimeException("Prodotto non trovato con ID: " + prodottoId));
         if (prodotto.getScorta() < quantitaRichiesta) {
             throw new IllegalStateException("Scorte insufficienti");
         }

@@ -17,7 +17,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+/*
+Questa classe converte il token JWT emesso da Keycloak nel formato riconosciuto da Spring Security.
 
+Estrae i ruoli specifici del client (olioshop-client) annidati nel payload del token JWT.
+
+Li trasforma in autorizzazioni standard Spring aggiungendo il prefisso ROLE_.
+
+Imposta il nome identificativo dell'utente autenticato (preferred_username o sub) all'interno
+del contesto di sicurezza dell'applicazione.
+ */
 @Component
 public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 

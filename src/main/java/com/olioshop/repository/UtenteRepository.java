@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface UtenteRepository extends JpaRepository<Utente, Long> {
 
-    //trovo l utente che corrisponde a un acerta mail!?
+    //trovo l utente che corrisponde a un acerta mail!
     Optional<Utente> findByEmail(String email);
 
     //vedo se esiste gi aun utente con la stessa mail

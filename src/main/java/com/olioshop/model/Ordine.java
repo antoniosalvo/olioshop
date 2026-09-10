@@ -32,6 +32,9 @@ public class Ordine {
     private BigDecimal prezzoTotale;
 
 
+
+
+
     @Column(nullable = false)
     private String stato;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -43,11 +46,13 @@ public class Ordine {
     @OneToMany(mappedBy = "ordine", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DettaglioOrdine> dettagli = new ArrayList<>();
 
+
     public Ordine(String stato, BigDecimal prezzoTotale, Utente utente) {
         this.stato = stato;
         this.dataCreazione = LocalDateTime.now();
         this.prezzoTotale = prezzoTotale;
         this.utente = utente;
+
     }
 
     public Ordine() {this.dataCreazione = LocalDateTime.now();}

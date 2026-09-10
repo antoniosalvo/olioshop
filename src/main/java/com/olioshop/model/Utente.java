@@ -39,9 +39,9 @@ public class Utente {
 
 
 
-    private String indirizzo;
 
-    private String ruolo; // "CLIENTE", "ADMIN"
+    @Column(nullable = false)
+    private String indirizzo;
 
     //In JPA/Hibernate, qualsiasi variabile dichiarata dentro una classe @Entity diventa in automatico
     // una colonna della tabella SQL, anche se non metti esplicitamente l'annotazione @Column
@@ -54,7 +54,8 @@ public class Utente {
     @OneToMany(mappedBy = "utente", cascade = CascadeType.ALL)
     private List<Ordine> ordini = new ArrayList<>();
 
-    //COSTRUTTORI VUOTO (OBBLIGATORIO PER JPA) E CON PARAMETRI E I SETTER E GETTER PER ACCEDERE AI CAMPI
+    //COSTRUTTORI VUOTO (OBBLIGATORIO PER JPA) E CON PARAMETRI E I SETTER E GETTER PER ACCEDERE
+    // AI CAMPI acnhe se lo le annotazioni lo danno gia di per se
     public Utente() {}
 
     public Utente(String nome, String cognome, String email, String indirizzo) {
@@ -62,7 +63,6 @@ public class Utente {
         this.cognome = cognome;
         this.email = email;
         this.indirizzo = indirizzo;
-
     }
 
 }

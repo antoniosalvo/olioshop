@@ -12,7 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class OrdineService {
@@ -28,6 +31,39 @@ public class OrdineService {
         this.utenteRepository = utenteRepository;
     }
 
+
+    @Transactional(readOnly = true) //true perche devo solo leggere
+    //parto dalal mail
+    public List<Map<String, Object>> getUltimiOrdiniUtente(String emailUtente) {
+        //trovo utente corrispondente e trovo gli ordini corrispondentei a utente con quella mail e certo id
+        Utente utente = utenteRepository.findByEmail(emailUtente)
+                .orElseThrow(() -> new RuntimeException("Utente non trovato con email: " + emailUtente));
+
+        List<Ordine> ordini = ordineRepository.findTop5ByUtenteIdOrderByDataCreazioneDesc(utente.getId());
+
+        List<java.util.Map<String, Object>> risultato = new ArrayList<>();
+
+        for (Ordine o : ordini) {
+            java.util.Map<String, Object> mappaOrdine = new HashMap<>();
+            mappaOrdine.put("id", o.getId());
+            mappaOrdine.put("dataCreazione", o.getDataCreazione());
+            mappaOrdine.put("prezzoTotale", o.getPrezzoTotale());
+            mappaOrdine.put("stato", o.getStato());
+
+            List<Map<String, Object>> articoli = new ArrayList<>();
+            for (DettaglioOrdine d : o.getDettagli()) {
+                Map<String, Object> mappaDettaglio = new HashMap<>();
+                mappaDettaglio.put("nomeProdotto", d.getProdotto().getNome());
+                mappaDettaglio.put("quantita", d.getQuantita());
+                mappaDettaglio.put("prezzoUnitario", d.getPrezzoUnitario());
+                articoli.add(mappaDettaglio);
+            }
+            mappaOrdine.put("articoli", articoli);
+            risultato.add(mappaOrdine);
+        }
+
+        return risultato;
+    }
 
     //una volta che ho tutti i pezzi ceh li ho scelti e voglio fare l ordine  chiamo i metodo creo ordine
     @Transactional
@@ -50,6 +86,19 @@ public class OrdineService {
         for (DettaglioOrdine riga : righeOrdine) {
             Prodotto prodotto = prodottoService.trovaPerId(riga.getProdotto().getId());
             prodottoService.scalaScorte(prodotto.getId(), riga.getQuantita());
+            // ================= INIZIO PAUSA TEMPORANEA =================
+            //questo l ho usato per fare il controllo se funzioanva il check per l overbooking (funziona pare)
+            /*
+            try {
+                //System.out.println(">>> [LOCK ATTIVO] Utente: " + emailUtente + " - Metto in pausa per 5 secondi...");
+                Thread.sleep(5000);
+                //System.out.println(">>> [FINE PAUSA] Utente: " + emailUtente + " - Salvo e rilascio il lock.");
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
+             */
+            // ================== FINE PAUSA TEMPORANEA ==================
             riga.setPrezzoUnitario(prodotto.getPrezzo());
             riga.setOrdine(ordine);
             BigDecimal subtotale = prodotto.getPrezzo().multiply(BigDecimal.valueOf(riga.getQuantita()));

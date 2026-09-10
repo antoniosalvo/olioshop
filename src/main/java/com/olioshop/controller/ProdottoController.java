@@ -29,6 +29,8 @@ public class ProdottoController {
         return new ResponseEntity<>(catalogo, HttpStatus.OK);
     }
 
+
+    //l avevo creato ma poi non l ho piu usato perche  non ho implementato l apertura del singolo prodotto
     @GetMapping("/{id}")
     public ResponseEntity<Prodotto> trovaProdotto(@PathVariable Long id) {
         try {
